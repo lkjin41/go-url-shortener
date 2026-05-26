@@ -5,17 +5,22 @@ import (
 	"errors"
 
 	coreerrors "github.com/lkjin41/go-url-shortener/internal/core/errors"
-	coreredis "github.com/lkjin41/go-url-shortener/internal/core/redis"
 	"github.com/redis/go-redis/v9"
 )
 
 // Repository defines the interface for interacting with the Redis storage service for URL mappings
 type Repository struct {
-	service *coreredis.StorageService
+	service StorageEngine
 }
 
-// NewRepository creates a new instance of Repository with the provided Redis storage service
-func NewRepository(service *coreredis.StorageService) *Repository {
+// StorageEngine defines the interface for the storage engine used by the Repository
+type StorageEngine interface {
+	Set(ctx context.Context, key string, value any) error
+	Get(ctx context.Context, key string, dest any) error
+}
+
+// NewRepository creates a new instance of Repository with the provided storage service
+func NewRepository(service StorageEngine) *Repository {
 	return &Repository{service: service}
 }
 
