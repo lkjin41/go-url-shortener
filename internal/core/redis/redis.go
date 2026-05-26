@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"time"
 
+	coreconfig "github.com/lkjin41/go-url-shortener/internal/core/config"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -18,11 +19,11 @@ type StorageService struct {
 }
 
 // InitializeStore initializing the store service and return a store pointer
-func InitializeStore(ctx context.Context) *StorageService {
+func InitializeStore(ctx context.Context, cfg *coreconfig.RedisConfig) *StorageService {
 	redisClient := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "",
-		DB:       0,
+		Addr:     fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
+		Password: cfg.Password,
+		DB:       cfg.DB,
 	})
 
 	pong, err := redisClient.Ping(ctx).Result()
