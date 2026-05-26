@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	core_errors "github.com/lkjin41/go-url-shortener/internal/core/errors"
+	coreerrors "github.com/lkjin41/go-url-shortener/internal/core/errors"
 	coreredis "github.com/lkjin41/go-url-shortener/internal/core/redis"
 	"github.com/redis/go-redis/v9"
 )
@@ -23,7 +23,7 @@ func NewRepository(service *coreredis.StorageService) *Repository {
 func (r *Repository) SaveUrlMapping(ctx context.Context, key string, value any) error {
 	err := r.service.Set(ctx, key, value)
 	if err != nil {
-		return core_errors.NewInternalServerError("failed to save URL mapping in Redis", err)
+		return coreerrors.NewInternalServerError("failed to save URL mapping in Redis", err)
 	}
 	return nil
 }
@@ -33,10 +33,10 @@ func (r *Repository) GetOriginalUrl(ctx context.Context, key string, dest any) e
 	err := r.service.Get(ctx, key, dest)
 	if err != nil {
 		if errors.Is(err, redis.Nil) {
-			return core_errors.NewNotFoundError("short link does not exist", err)
+			return coreerrors.NewNotFoundError("short link does not exist", err)
 		}
 
-		return core_errors.NewInternalServerError("failed to get url from storage", err)
+		return coreerrors.NewInternalServerError("failed to get url from storage", err)
 	}
 
 	return nil
