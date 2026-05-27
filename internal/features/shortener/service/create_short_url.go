@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"crypto/sha256"
 	"fmt"
 	"math/big"
@@ -11,9 +12,9 @@ import (
 
 // CreateShortLink generates a short link for the given initial link and user ID,
 // and saves the mapping in the repository
-func (s *ShortenerService) CreateShortLink(initialLink string, userId string) (string, error) {
+func (s *ShortenerService) CreateShortLink(ctx context.Context, initialLink string, userId string) (string, error) {
 	shortLink := generateShortLink(initialLink, userId)
-	err := s.repo.SaveUrlMapping(shortLink, initialLink)
+	err := s.repo.SaveUrlMapping(ctx, shortLink, initialLink)
 	if err != nil {
 		return "", fmt.Errorf("failed to save URL mapping: %w", err)
 	}

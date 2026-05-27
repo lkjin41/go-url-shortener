@@ -1,0 +1,36 @@
+services:
+  redis:
+    image: redis:8.8.0-alpine
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  url-shortener-app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: url-shortener-app
+    restart: always
+    ports:
+      - "9808:9808"
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      - app-logs:/app/logs
+
+volumes:
+  redis-data:
+  app-logs:
